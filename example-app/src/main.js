@@ -1,29 +1,61 @@
 import './style.css';
-import { PluginTemplate } from '@capgo/capacitor-plugin-template';
+import { PrivacyScreen } from '@capgo/capacitor-privacy-screen';
 
 const output = document.getElementById('plugin-output');
-const echoInput = document.getElementById('echo-value');
-const echoButton = document.getElementById('run-echo');
+const statusBadge = document.getElementById('status-badge');
+const enableButton = document.getElementById('enable-protection');
+const disableButton = document.getElementById('disable-protection');
+const refreshButton = document.getElementById('refresh-status');
 const versionButton = document.getElementById('get-version');
 
 const setOutput = (value) => {
   output.textContent = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
 };
 
-echoButton.addEventListener('click', async () => {
+const setStatus = (enabled) => {
+  statusBadge.textContent = enabled ? 'Enabled' : 'Disabled';
+  statusBadge.dataset.enabled = String(enabled);
+};
+
+const refreshStatus = async () => {
   try {
-    const result = await PluginTemplate.echo({ value: echoInput.value });
+    const result = await PrivacyScreen.isEnabled();
+    setStatus(result.enabled);
+    setOutput(result);
+  } catch (error) {
+    setOutput(`Error: ${error?.message ?? error}`);
+  }
+};
+
+enableButton.addEventListener('click', async () => {
+  try {
+    const result = await PrivacyScreen.enable();
+    setStatus(result.enabled);
     setOutput(result);
   } catch (error) {
     setOutput(`Error: ${error?.message ?? error}`);
   }
 });
 
-versionButton.addEventListener('click', async () => {
+disableButton.addEventListener('click', async () => {
   try {
-    const result = await PluginTemplate.getPluginVersion();
+    const result = await PrivacyScreen.disable();
+    setStatus(result.enabled);
     setOutput(result);
   } catch (error) {
     setOutput(`Error: ${error?.message ?? error}`);
   }
 });
+
+refreshButton.addEventListener('click', refreshStatus);
+
+versionButton.addEventListener('click', async () => {
+  try {
+    const result = await PrivacyScreen.getPluginVersion();
+    setOutput(result);
+  } catch (error) {
+    setOutput(`Error: ${error?.message ?? error}`);
+  }
+});
+
+refreshStatus();

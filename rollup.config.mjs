@@ -4,7 +4,7 @@ export default {
     {
       file: 'dist/plugin.js',
       format: 'iife',
-      name: 'capacitorPluginTemplate',
+      name: 'capacitorPrivacyScreen',
       globals: {
         '@capacitor/core': 'capacitorExports',
       },
