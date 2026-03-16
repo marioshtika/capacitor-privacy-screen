@@ -2,27 +2,27 @@
 import PackageDescription
 
 let package = Package(
-    name: "CapgoCapacitorPluginTemplate",
+    name: "CapgoCapacitorPrivacyScreen",
     platforms: [.iOS(.v15)],
     products: [
         .library(
-            name: "CapgoCapacitorPluginTemplate",
-            targets: ["PluginTemplatePlugin"])
+            name: "CapgoCapacitorPrivacyScreen",
+            targets: ["PrivacyScreenPlugin"])
     ],
     dependencies: [
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", from: "8.0.0")
     ],
     targets: [
         .target(
-            name: "PluginTemplatePlugin",
+            name: "PrivacyScreenPlugin",
             dependencies: [
                 .product(name: "Capacitor", package: "capacitor-swift-pm"),
                 .product(name: "Cordova", package: "capacitor-swift-pm")
             ],
-            path: "ios/Sources/PluginTemplatePlugin"),
+            path: "ios/Sources/PrivacyScreenPlugin"),
         .testTarget(
-            name: "PluginTemplatePluginTests",
-            dependencies: ["PluginTemplatePlugin"],
-            path: "ios/Tests/PluginTemplatePluginTests")
+            name: "PrivacyScreenPluginTests",
+            dependencies: ["PrivacyScreenPlugin"],
+            path: "ios/Tests/PrivacyScreenPluginTests")
     ]
 )

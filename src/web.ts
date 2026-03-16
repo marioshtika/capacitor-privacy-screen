@@ -1,10 +1,22 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { EchoOptions, EchoResult, PluginTemplatePlugin, PluginVersionResult } from './definitions';
+import type { PluginVersionResult, PrivacyScreenPlugin, PrivacyScreenStatus } from './definitions';
 
-export class PluginTemplateWeb extends WebPlugin implements PluginTemplatePlugin {
-  async echo(options: EchoOptions): Promise<EchoResult> {
-    return options;
+export class PrivacyScreenWeb extends WebPlugin implements PrivacyScreenPlugin {
+  private enabled = true;
+
+  async enable(): Promise<PrivacyScreenStatus> {
+    this.enabled = true;
+    return { enabled: this.enabled };
+  }
+
+  async disable(): Promise<PrivacyScreenStatus> {
+    this.enabled = false;
+    return { enabled: this.enabled };
+  }
+
+  async isEnabled(): Promise<PrivacyScreenStatus> {
+    return { enabled: this.enabled };
   }
 
   async getPluginVersion(): Promise<PluginVersionResult> {
