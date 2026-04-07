@@ -73,7 +73,14 @@ import UIKit
 
         screenLayer.addSublayer(textField.layer)
 
-        guard let secureSublayer = textField.layer.sublayers?.last else {
+        let secureSublayer: CALayer?
+        if #available(iOS 17.0, *) {
+            secureSublayer = textField.layer.sublayers?.last ?? textField.layer.sublayers?.first
+        } else {
+            secureSublayer = textField.layer.sublayers?.first ?? textField.layer.sublayers?.last
+        }
+
+        guard let secureSublayer else {
             textField.layer.removeFromSuperlayer()
             return
         }
