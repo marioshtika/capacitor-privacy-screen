@@ -6,6 +6,10 @@ import UIKit
     private var windowProvider: (() -> UIWindow?)?
     private weak var overlayView: UIView?
     private(set) var isEnabled = false
+    // Hidden secure text field used as a protected rendering host.
+    // With `isSecureTextEntry = true`, iOS marks this layer subtree as capture-protected.
+    // We temporarily re-parent the window layer under that subtree to blank screenshots.
+    private var screenshotPreventionTextField: UITextField?
 
     deinit {
         stop()
@@ -46,13 +50,47 @@ import UIKit
         observers.removeAll()
         windowProvider = nil
         hideOverlay()
+        disableScreenshotPrevention()
     }
 
     @objc public func setEnabled(_ enabled: Bool) {
         isEnabled = enabled
-        if !enabled {
+        if enabled {
+            enableScreenshotPrevention()
+        } else {
             hideOverlay()
+            disableScreenshotPrevention()
         }
+    }
+
+    private func enableScreenshotPrevention() {
+        guard screenshotPreventionTextField == nil,
+              let window = currentWindow(),
+              let screenLayer = window.layer.superlayer else { return }
+
+        let textField = UITextField()
+        textField.isSecureTextEntry = true
+
+        screenLayer.addSublayer(textField.layer)
+
+        guard let secureSublayer = textField.layer.sublayers?.last else {
+            textField.layer.removeFromSuperlayer()
+            return
+        }
+
+        secureSublayer.addSublayer(window.layer)
+        screenshotPreventionTextField = textField
+    }
+
+    private func disableScreenshotPrevention() {
+        guard let textField = screenshotPreventionTextField else { return }
+        defer { screenshotPreventionTextField = nil }
+
+        if let screenLayer = textField.layer.superlayer,
+           let window = currentWindow() {
+            screenLayer.addSublayer(window.layer)
+        }
+        textField.layer.removeFromSuperlayer()
     }
 
     private func showOverlayIfNeeded() {
